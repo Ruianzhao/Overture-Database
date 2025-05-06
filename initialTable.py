@@ -25,7 +25,18 @@ for curr in toronto_places['categories']:
 #And creates a dictionary that contains the category name and appearance amount
 categoryAndCount = Counter(categories)
 
-#Prints out the dictionary line by line
-for category, count in categoryAndCount.items():
-    print(f"{category}: {count}")
-        
+
+#Creates a new dataframe from the different categories and their respective counts
+catAndCountTable = pd.DataFrame.from_dict(categoryAndCount, orient='index', columns=['Count'])
+catAndCountTable.index.name = 'Category'
+catAndCountTable = catAndCountTable.reset_index()
+
+#Adds a new column for the percentage that the category shows up
+catAndCountTable = catAndCountTable.assign(Percentage= lambda counts: (counts['Count']/sum(categoryAndCount.values()) * 100))
+
+#Prints first few rows of dataframe
+print(catAndCountTable.head())
+
+#Export to csv
+catAndCountTable.to_csv('toronto_category_summary.csv', index=False)
+
