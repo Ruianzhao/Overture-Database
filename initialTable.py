@@ -8,6 +8,9 @@ from collections import Counter
 #Load the parquet file
 toronto_places = pd.read_parquet('toronto_places.parquet', engine='auto')
 
+#Creates a csv file for the toronto places
+toronto_places.to_csv('toronto_places.csv', index=False)
+
 #Prints the transposed version of the table which allows for better printing
 print(toronto_places.head().T)
  
