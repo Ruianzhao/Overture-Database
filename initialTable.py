@@ -8,11 +8,22 @@ from collections import Counter
 #Load the parquet file
 toronto_places = pd.read_parquet('toronto_places.parquet', engine='auto')
 
+montreal_places = pd.read_parquet('montreal_places.parquet', engine='auto')
+
+edmonton_places = pd.read_parquet('edmonton_places.parquet', engine='auto')
+
+ottawa_places = pd.read_parquet('ottawa_places.parquet', engine='auto')
 #Creates a csv file for the toronto places
 toronto_places.to_csv('toronto_places.csv', index=False)
 
+montreal_places.to_csv('montreal_places.csv', index=False)
+
+edmonton_places.to_csv('edmonton_places.csv', index=False)
+
+ottawa_places.to_csv('ottawa_places.csv', index=False)
+
 #Prints the transposed version of the table which allows for better printing
-print(toronto_places.head().T)
+print(montreal_places.head().T)
  
 # Create a list to store all the categories
 categories = []
