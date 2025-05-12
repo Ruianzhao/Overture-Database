@@ -1,7 +1,9 @@
+# This program allows you to input a parquet file of a city and it will
+# convert it into a .csv file, then it creates a table with the different categories
+# and the amount they show up and exports it as a .csv file.
+
 #Use pandas to read parquet files
 import pandas as pd
-
-import array
 
 from collections import Counter
 
