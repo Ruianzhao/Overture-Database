@@ -5,6 +5,33 @@ import array
 
 from collections import Counter
 
+
+#Function that will create a table with the number and percentage that each
+#category shows up, and exports it as a .csv file
+def generateCategoryTable(df, cityName):
+    categories = []
+    #Goes through ever place in the parquet and determines what category they are
+    for curr in df['categories']:
+        #If the dictionary isnt empty, and the primary tag exists, then add the category
+        # into the categories list
+        if isinstance(curr, dict) and 'primary' in curr:
+            categories.append(curr['primary'])
+    
+    #Counts and creates a dictionary with each category and the amount they show up
+    categoriesAndCount = Counter(categories)
+    
+    #Creates a new dataframe with the different categories and their respective counts
+    outputTable = pd.DataFrame.from_dict(categoriesAndCount, orient='index', columns=['Count'])
+    outputTable.index.name = 'Category'
+    outputTable = outputTable.reset_index()
+    outputTable = outputTable.assign(Percentage= lambda counts: (counts['Count']/sum(categoriesAndCount.values()) * 100))
+    
+    #Orders the tables so the categories with the highest counts are at the top
+    outputTable = outputTable.sort_values(by='Count', ascending=False)
+    
+    #Export to .csv
+    outputTable.to_csv(f"{cityName.lower()}_category_summary.csv", index=False)
+
 #Load the parquet file
 toronto_places = pd.read_parquet('toronto_places.parquet', engine='auto')
 
@@ -22,35 +49,7 @@ edmonton_places.to_csv('edmonton_places.csv', index=False)
 
 ottawa_places.to_csv('ottawa_places.csv', index=False)
 
-#Prints the transposed version of the table which allows for better printing
-print(montreal_places.head().T)
- 
-# Create a list to store all the categories
-categories = []
-
-#This loop goes through every place in the parquet and determines what category they are
-for curr in toronto_places['categories']:
-    #If the dictionary isnt empty, and the primary tag exists, then add the category
-    # into the categories list
-    if isinstance(curr, dict) and 'primary' in  curr:
-        categories.append(curr['primary'])
-
-#Automatically counts the amount of times each category appears in the list
-#And creates a dictionary that contains the category name and appearance amount
-categoryAndCount = Counter(categories)
-
-
-#Creates a new dataframe from the different categories and their respective counts
-catAndCountTable = pd.DataFrame.from_dict(categoryAndCount, orient='index', columns=['Count'])
-catAndCountTable.index.name = 'Category'
-catAndCountTable = catAndCountTable.reset_index()
-
-#Adds a new column for the percentage that the category shows up
-catAndCountTable = catAndCountTable.assign(Percentage= lambda counts: (counts['Count']/sum(categoryAndCount.values()) * 100))
-
-#Prints first few rows of dataframe
-print(catAndCountTable.head())
-
-#Export to csv
-catAndCountTable.to_csv('toronto_category_summary.csv', index=False)
-
+generateCategoryTable(toronto_places, "toronto")
+generateCategoryTable(edmonton_places, "edmonton")
+generateCategoryTable(montreal_places, "montreal")
+generateCategoryTable(ottawa_places, "ottawa")
