@@ -28,11 +28,11 @@ combinedTable = pd.concat([torontoCat, ottawaCat, montrealCat, edmontonCat], ign
 
 #Changes the table so that the categories are used to index the table and the columns
 #display the count and percentage of each category for each city
-pivotTable = combinedTable.pivot_table(index='Category', columns='City', values='Percentage')
+pivotTable1 = combinedTable.pivot_table(index='Category', columns='City', values='Percentage')
 
 #This removes any categories that are present in one city which can mess with the 
 #comparison
-filteredTable = pivotTable[pivotTable.notna().sum(axis=1)>=2]
+filteredTable = pivotTable1[pivotTable1.notna().sum(axis=1)>=2]
 
 #Creates a new column called Max Deviation, which compares the percentages
 #in each row and determines the max deviation between the cities for each category
@@ -44,3 +44,31 @@ filteredTable = filteredTable.sort_values(by='Max Deviation', ascending=False)
 
 filteredTable.to_csv("max_deviation_category_comparison.csv", index=True)
     
+    
+    
+#This makes it so if a category is present it will get a value of 1 and if it isnt
+#present it will get a value of 0
+binaryCoverageMatrix = pivotTable1.notna().astype(int)
+binaryCoverageMatrix = binaryCoverageMatrix.copy()
+
+binaryCoverageMatrix['Cities Present'] = binaryCoverageMatrix.sum(axis=1)
+binaryCoverageMatrix = binaryCoverageMatrix.sort_values(
+    by=['Cities Present', binaryCoverageMatrix.index.name],
+    ascending=[False, True]
+)
+
+grouped = binaryCoverageMatrix.groupby('Cities Present')
+
+group1 = grouped.get_group(1)
+group2 = grouped.get_group(2)
+group3 = grouped.get_group(3)
+group4 = grouped.get_group(4)
+
+binaryCoverageMatrix.to_csv("binary_coverage_matrix_of_categories.csv", index=True)
+
+group1.to_csv("categories_in_1_city.csv", index=True)
+group2.to_csv("categories_in_2_cities.csv", index=True)
+group3.to_csv("categories_in_3_cities.csv", index=True)
+group4.to_csv("categories_in_4_cities.csv", index=True)
+
+
