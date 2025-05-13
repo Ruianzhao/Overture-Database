@@ -29,6 +29,7 @@ combinedTable = pd.concat([torontoCat, ottawaCat, montrealCat, edmontonCat], ign
 #Changes the table so that the categories are used to index the table and the columns
 #display the count and percentage of each category for each city
 pivotTable1 = combinedTable.pivot_table(index='Category', columns='City', values='Percentage')
+pivotTable2 = combinedTable.pivot_table(index='Category', columns='City', values='Count')
 
 #This removes any categories that are present in one city which can mess with the 
 #comparison
@@ -72,3 +73,10 @@ group3.to_csv("categories_in_3_cities.csv", index=True)
 group4.to_csv("categories_in_4_cities.csv", index=True)
 
 
+#This creates a Spearman ranked correlation table based on the data
+#This removes any rows that arent presnent in all 
+pivotTable2Clean = pivotTable2.dropna()
+rankedTable2 = pivotTable2.rank(ascending=False)
+spearmanCorrelation = rankedTable2.corr(method='spearman')
+
+spearmanCorrelation.to_csv("spearman_correlation_common_categories.csv", index=True)
