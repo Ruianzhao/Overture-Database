@@ -80,3 +80,28 @@ rankedTable2 = pivotTable2.rank(ascending=False)
 spearmanCorrelation = rankedTable2.corr(method='spearman')
 
 spearmanCorrelation.to_csv("spearman_correlation_common_categories.csv", index=True)
+
+#This section creates a jaccard matrix out of the data
+def jaccard(city1, city2):
+    return len(city1 & city2)/len(city1 | city2)
+
+#Creates a dictionary out of the sets
+city_sets = {
+    'Toronto': torontoSet,
+    'Ottawa': ottawaSet,
+    'Montreal': montrealSet,
+    'Edmonton': edmontonSet
+}
+
+#Creates a list of the cities present
+cities = city_sets.keys()
+
+#Creates an empty dataframe for the jaccard matrix which figures out the percentage
+#of categories that are shared between the cities
+jaccardMatrix = pd.DataFrame(index=cities, columns=cities)
+
+for city1 in cities:
+    for city2 in cities:
+        jaccardMatrix.loc[city1, city2] = jaccard(city_sets[city1], city_sets[city2])
+        
+jaccardMatrix.to_csv("jaccard_matrix.csv", index=True)
